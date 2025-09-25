@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:readai/common/colors.dart';
+import 'package:readai/widgets/search.dart';
 
 class DictionaryPage extends StatefulWidget {
   const DictionaryPage({super.key});
@@ -14,7 +16,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.grey,
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
         elevation: 0,
@@ -30,22 +32,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Поиск
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: "По терминам, авторам, книгам",
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.star_border, color: Colors.purple),
-                  onPressed: () {},
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ),
-            const SizedBox(height: 12),
-
+            SearchField(),
             // Табы
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -80,6 +67,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                 itemCount: 6,
                 itemBuilder: (context, index) {
                   return Card(
+                    color: AppColors.white,
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -93,6 +81,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                         "Книга Глава 3\nОпределение термина",
                       ),
                       trailing: OutlinedButton(
+                        
                         onPressed: () {},
                         child: const Text("Подробнее"),
                       ),

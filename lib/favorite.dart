@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readai/common/colors.dart';
+import 'package:readai/widgets/search.dart';
 
 enum FavSort { date, chapter, pinned }
 
@@ -104,61 +107,22 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final green = const Color(0xFFAEEA63); // мягкий салатовый как в макете
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: AppColors.grey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: bg,
-        titleSpacing: 16,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Избранное-",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              "Название книги",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+
+        title: Text(
+          """Избранное-
+Название книги""",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
-            // Поиск
-            TextField(
-              controller: _searchCtrl,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: "Поиск",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.auto_awesome,
-                    color: Color(0xFFB277FF),
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Сегменты сортировки
+            SearchField(),
             Row(
               children: [
                 _SortChip(
@@ -258,67 +222,76 @@ class _FavCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              item.title,
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              item.snippet,
-              style: const TextStyle(fontSize: 13, height: 1.25),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              item.chapterDisplay,
-              style: const TextStyle(color: Colors.black54),
-            ),
-            const SizedBox(height: 12),
-            Row(
+    return Column(
+      children: [
+        Card(
+          color: Colors.white,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _pillButton(
-                  context,
-                  label: "Поделиться",
-                  icon: Icons.ios_share_outlined,
-                  bg: green,
-                  onTap: onShare,
+                Text(
+                  item.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
                 ),
-                const SizedBox(width: 8),
-                _pillButton(
-                  context,
-                  label: "Удалить",
-                  icon: Icons.delete_outline,
-                  bg: green,
-                  onTap: onDelete,
+                const SizedBox(height: 6),
+                Text(
+                  item.snippet,
+                  style: const TextStyle(fontSize: 13, height: 1.25),
                 ),
-                const SizedBox(width: 8),
-                _pillButton(
-                  context,
-                  label: item.pinned ? "Открепить" : "Закрепить",
-                  icon: item.pinned ? Icons.push_pin : Icons.star_border,
-                  bg: green,
-                  onTap: onPin,
+                const SizedBox(height: 6),
+                Text(
+                  item.chapterDisplay,
+                  style: const TextStyle(color: Colors.black54),
                 ),
+                const SizedBox(height: 12),
               ],
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            _pillButton(
+              context,
+              label: "Поделиться",
+              icon: "assets/icons/upload.svg",
+              bg: green,
+              onTap: onShare,
+            ),
+            const SizedBox(width: 4),
+            _pillButton(
+              context,
+              label: "Удалить",
+              icon: "assets/icons/trash.svg",
+              bg: green,
+              onTap: onDelete,
+            ),
+            const SizedBox(width: 4),
+            _pillButton(
+              context,
+              label: item.pinned ? "Открепить" : "Закрепить",
+              icon: "assets/icons/star.svg",
+              bg: green,
+              onTap: onPin,
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
   Widget _pillButton(
     BuildContext context, {
     required String label,
-    required IconData icon,
+    required String icon,
     required Color bg,
     required VoidCallback onTap,
   }) {
@@ -330,17 +303,18 @@ class _FavCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 18, color: Colors.black),
-                const SizedBox(width: 6),
+                SvgPicture.asset(icon),
+                const SizedBox(width: 2),
                 Text(
                   label,
                   style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
               ],

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:readai/common/colors.dart';
+import 'package:readai/widgets/search.dart';
 
 class ReaderPage extends StatelessWidget {
   const ReaderPage({super.key});
@@ -6,7 +9,7 @@ class ReaderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.grey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.grey[100],
@@ -21,22 +24,7 @@ class ReaderPage extends StatelessWidget {
         child: Column(
           children: [
             // Поиск
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: "Поиск",
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.star_border, color: Colors.purple),
-                  onPressed: () {},
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ),
-            const SizedBox(height: 12),
-
+            SearchField(),
             // Список книг
             Expanded(
               child: ListView.builder(
@@ -47,6 +35,7 @@ class ReaderPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    color: AppColors.white,
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
@@ -81,8 +70,13 @@ class ReaderPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                icon: const Icon(Icons.question_answer),
-                                label: const Text("Q&A"),
+                                icon: Text(
+                                  "Q&A",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                label: SvgPicture.asset(
+                                  "assets/icons/help.svg",
+                                ),
                               ),
                               const SizedBox(width: 8),
                               ElevatedButton.icon(
@@ -94,8 +88,14 @@ class ReaderPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                icon: const Icon(Icons.list),
-                                label: const Text("Содержание"),
+                                icon: const Text(
+                                  "Содержание",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                label: SvgPicture.asset(
+                                  "assets/icons/book_add.svg",
+                                  width: 18,
+                                ),
                               ),
                               const Spacer(),
                               ElevatedButton(
@@ -107,7 +107,10 @@ class ReaderPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                child: const Text("читать"),
+                                child: const Text(
+                                  "читать",
+                                  style: TextStyle(fontSize: 12),
+                                ),
                               ),
                             ],
                           ),

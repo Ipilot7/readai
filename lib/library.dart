@@ -1,6 +1,8 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readai/common/colors.dart';
+import 'package:readai/widgets/search.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -15,155 +17,72 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Top title + add button
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: Row(
-                  children: [
-                    Text(
-                      'Библиотека',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const Spacer(),
-                    FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFFCBFF9C),
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          // Top title + add button
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 9),
+              child: Row(
+                children: [
+                  Text(
+                    'Библиотека',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const Spacer(),
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.green,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
                       ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.add, size: 18),
-                      label: const Text('добавить книгу'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Search + magic button
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'по названиям, авторам, содержимому книг',
-                          prefixIcon: const Icon(Icons.search),
-                          isDense: true,
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 12,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
-                          ),
-                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      height: 44,
-                      width: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const Icon(Icons.auto_awesome),
-                    ),
-                  ],
-                ),
+                    onPressed: () {},
+                    icon: const Text('добавить книгу'),
+                    label: SvgPicture.asset("assets/icons/book_add.svg"),
+                  ),
+                ],
               ),
             ),
+          ),
 
-            // Current book
-            const SliverToBoxAdapter(child: _SectionTitle('Текущая книга')),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: CurrentBookCard(
-                  book: demoBooks.first,
-                  progress: 0.5,
-                  onContinue: () {},
-                ),
+          // Search + magic button
+          SliverToBoxAdapter(child: SearchField()),
+
+          SliverToBoxAdapter(
+            child: CurrentBookCard(
+              book: demoBooks.first,
+              progress: 0.5,
+              onContinue: () {},
+            ),
+          ),
+          // Shelf list depending on tab
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 270,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                scrollDirection: Axis.horizontal,
+                itemCount: _booksForTab(_shelfTab).length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final b = _booksForTab(_shelfTab)[index];
+                  return BookTile(book: b, width: 148);
+                },
               ),
             ),
+          ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 8)),
-            const SliverToBoxAdapter(child: _SectionTitle('Полки')),
-
-            // Segmented chips
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                child: Wrap(
-                  spacing: 8,
-                  children:
-                      ShelfTab.values.map((t) {
-                        final bool selected = _shelfTab == t;
-                        return ChoiceChip(
-                          label: Text(t.label),
-                          selected: selected,
-                          onSelected: (_) => setState(() => _shelfTab = t),
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                          side: BorderSide(
-                            color:
-                                selected
-                                    ? Colors.transparent
-                                    : Colors.grey.shade300,
-                          ),
-                          selectedColor: const Color(0xFFCBFF9C),
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        );
-                      }).toList(),
-                ),
-              ),
-            ),
-
-            // Shelf list depending on tab
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 260,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _booksForTab(_shelfTab).length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final b = _booksForTab(_shelfTab)[index];
-                    return BookTile(book: b, width: 190);
-                  },
-                ),
-              ),
-            ),
-
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 92),
-            ), // space for bottom bar
-          ],
-        ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 92),
+          ), // space for bottom bar
+        ],
       ),
     );
   }
@@ -197,18 +116,6 @@ extension on ShelfTab {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
-  final String text;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-      child: Text(text, style: Theme.of(context).textTheme.titleMedium),
-    );
-  }
-}
-
 class CurrentBookCard extends StatelessWidget {
   const CurrentBookCard({
     super.key,
@@ -229,51 +136,72 @@ class CurrentBookCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade200),
       ),
       padding: const EdgeInsets.all(16),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BookCover(imageUrl: book.coverUrl, width: 90, height: 128),
-          const SizedBox(width: 14),
-          Expanded(
+          Text('Текущая книга', style: TextStyle(fontSize: 20)),
+          Container(
+            margin: EdgeInsets.only(top: 18, bottom: 24),
+            decoration: BoxDecoration(
+              color: AppColors.grey,
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  book.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'автор:\n${book.author}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.grey.shade700),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 8,
-                          backgroundColor: Colors.grey.shade200,
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BookCover(
+                        imageUrl: book.coverUrl,
+                        width: 90,
+                        height: 128,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          // mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          // mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              book.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'автор:\n${book.author}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Colors.grey.shade700),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('${(progress * 100).round()}%'),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.change_circle_outlined, size: 18),
-                  ],
+                      SizedBox(
+                        width: 37,
+                        height: 37,
+                        child: Stack(
+                          children: [
+                            CircularProgressIndicator(
+                              value: progress,
+                              backgroundColor: Colors.grey.shade200,
+                            ),
+                            Center(child: Text("50%")),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
+                Container(
+                  padding: EdgeInsets.all(18),
                   width: double.infinity,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
@@ -289,6 +217,31 @@ class CurrentBookCard extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          Text('Полки', style: TextStyle(fontSize: 20)),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.grey,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50),
+                bottomLeft: Radius.circular(50),
+              ),
+            ),
+            height: 41,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder:
+                  (_, index) => Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: index == 0 ? AppColors.green : Colors.transparent,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Text("datadsdsd"),
+                  ),
             ),
           ),
         ],
@@ -310,7 +263,7 @@ class BookTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: width,
-        padding: const EdgeInsets.all(8),
+        // padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -322,21 +275,20 @@ class BookTile extends StatelessWidget {
             BookCover(
               imageUrl: book.coverUrl,
               width: double.infinity,
-              height: 160,
+              height: 210,
             ),
-            const SizedBox(height: 8),
             Text(
               book.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
             ),
             const SizedBox(height: 4),
             Text(
               book.author,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Colors.grey.shade700),
+              style: TextStyle(color: Colors.grey.shade700, fontSize: 11),
             ),
           ],
         ),
