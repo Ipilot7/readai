@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:readai/common/colors.dart';
+import 'package:readai/common/dialog_mixin.dart';
 import 'package:readai/widgets/search.dart';
 
 class DictionaryPage extends StatefulWidget {
@@ -9,7 +10,7 @@ class DictionaryPage extends StatefulWidget {
   State<DictionaryPage> createState() => _DictionaryPageState();
 }
 
-class _DictionaryPageState extends State<DictionaryPage> {
+class _DictionaryPageState extends State<DictionaryPage> with DialogMixin {
   final _tabs = ["Все", "Английский", "Французский", "Русский", "Немецкий"];
   int _selectedTab = 0;
 
@@ -81,8 +82,9 @@ class _DictionaryPageState extends State<DictionaryPage> {
                         "Книга Глава 3\nОпределение термина",
                       ),
                       trailing: OutlinedButton(
-                        
-                        onPressed: () {},
+                        onPressed: () {
+                          showAddWordDialog(onAdd: (book, term, icom) {});
+                        },
                         child: const Text("Подробнее"),
                       ),
                     ),

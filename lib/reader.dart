@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readai/common/colors.dart';
+import 'package:readai/common/dialog_mixin.dart';
 import 'package:readai/widgets/search.dart';
 
-class ReaderPage extends StatelessWidget {
+class ReaderPage extends StatefulWidget {
   const ReaderPage({super.key});
 
+  @override
+  State<ReaderPage> createState() => _ReaderPageState();
+}
+
+class _ReaderPageState extends State<ReaderPage> with DialogMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +105,16 @@ class ReaderPage extends StatelessWidget {
                               ),
                               const Spacer(),
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  showBookDialog(
+                                    imageUrl:
+                                        "https://covers.openlibrary.org/b/id/1111111-L.jpg",
+                                    title: "Понедельник начинается в субботу",
+                                    author: "Аркадий и Борис Стругацкие",
+                                    description: "Описание книги...",
+                                    onRead: () => print("Читать!"),
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.black,
                                   foregroundColor: Colors.white,

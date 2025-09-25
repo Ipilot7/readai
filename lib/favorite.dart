@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readai/common/colors.dart';
+import 'package:readai/common/dialog_mixin.dart';
 import 'package:readai/widgets/search.dart';
 
 enum FavSort { date, chapter, pinned }
@@ -32,7 +33,7 @@ class FavoritesPage extends StatefulWidget {
   State<FavoritesPage> createState() => _FavoritesPageState();
 }
 
-class _FavoritesPageState extends State<FavoritesPage> {
+class _FavoritesPageState extends State<FavoritesPage> with DialogMixin {
   final _searchCtrl = TextEditingController();
   FavSort _sort = FavSort.date;
 
@@ -157,14 +158,26 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     green: green,
                     onShare: () {
                       // Здесь подключай share_plus, если надо. Пока просто тост.
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Поделиться: ещё не подключено"),
-                        ),
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(
+                      //     content: Text("Поделиться: ещё не подключено"),
+                      //   ),
+                      // );
+                      showShareSheet(
+                        imageUrl:
+                            "https://covers.openlibrary.org/b/id/1111111-L.jpg",
+                        title: "Понедельник начинается в субботу",
+                        author: "Аркадий и Борис Стругацкие",
+                        shareLink:
+                            "https://covers.openlibrary.org/b/id/1111111-L.jpg",
                       );
                     },
                     onDelete: () {
-                      setState(() => _all.remove(item));
+                      showDeleteDialog(
+                        title: "Удалить книгу?",
+                        onDelete: () {},
+                      );
+                      // setState(() => _all.remove(item));
                     },
                     onPin: () {
                       setState(() => item.pinned = !item.pinned);
